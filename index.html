@@ -1,32 +1,190 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Smart Agriculture Water Allocation <!DOCTYPE html>
-    <html lang="en">
-    <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Smart Agriculture Water Allocation - Quick Sort</title>
-    <style>
-      :root{--bg:#f2f6ee;--card:#fff;--tx:#1b2a1f;--mu:#62736a;--bd:#d8e1d4;--ac:#2f7d4f;--ac2:#1f5f3b;--pv:#7a3fd0;--cj:#1f6fd1;--grass:#8fc46a;--grass2:#7db85a;--fence:#8a5a2b;--code:#f0f4ec;--hl:#fff1b8;}
-      body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,sans-serif;line-height:1.5;padding:16px}
-      .card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:20px;max-width:900px;margin:0 auto}
-      h1{color:var(--ac2);font-size:1.8rem;margin-top:0}
-      button{background:var(--ac);color:#fff;border:0;border-radius:8px;padding:10px 16px;cursor:pointer;font-size:1rem;margin-right:8px}
-      button:hover{background:var(--ac2)}
-      </style>
-    </head>
-      <body>
-        <div class="card">
-          <h1>Smart Agriculture Water Allocation</h1>
-        <p>DAA FA2 Project: Optimized Water Distribution via Quick Sort Priority Scheduling.</p>
-        <p>Team: Mandar Virendra Patil & Partners</p>
-        <button onclick="alert('System Active & Optimized!')">Run Simulation</button>button>
-        </div>div>
-      </body>
-    </html>html></p></p></h1>
-      </body>
-    </style></title></title>
-  </head>
+🌱 Smart Agriculture Water Allocation
+Sorting farm fields by soil moisture with Quick Sort so the driest fields are irrigated first.
+
+Design & Analysis of Algorithms · BIT25PC07
+FA2 – Model Making
+TY IT · Sem V · 2026-27
+Divide & Conquer
+Member 1
+Name (click to edit)
+Member 2
+Name (click to edit)
+Member 3
+Name (click to edit)
+Member 4
+Name (click to edit)
+1 Problem
+2 Simulation
+3 Water allocation
+4 Complexity
+5 Viva Q&A
+6 Conclusion
+1. Problem & approach
+Why sorting matters in smart irrigation.
+
+📍 Problem
+Sensors report soil-moisture (%) for every field. Water is limited, so the farmer must know which fields are driest without scanning the whole list each time.
+⚡ Why Quick Sort
+It sorts in place with O(n log n) average time. It splits the fields around a pivot: drier ones go left, wetter ones right, then each side is solved the same way (divide & conquer).
+🔁 Pipeline
+Each step of this model is one stage of the real system:
+Sensors
+→
+Quick Sort
+→
+Priority list
+→
+Greedy water allocation
+→
+Sprinklers
+2. Live simulation
+Press Play or Step. The right panel explains every move and highlights the matching pseudo-code line.
+
+◀ Back
+Step ▶
+Play
+Reset
+Speed
+🎲 Random farm
+Sample farm
+⚠ Worst case (already sorted)
+#1
+🌾
+Wheat-A
+42.5%
+#2
+🎋
+Sugarcane-B
+18%
+#3
+🌽
+Maize-C
+55%
+#4
+🧅
+Onion-D
+27.5%
+#5
+🌿
+Cotton-E
+35%
+#6
+🍇
+Grapes-F
+62%
+#7
+🍅
+Tomato-G
+22%
+#8
+🌱
+Rice-H
+48%
+Critical <30%
+Low <45%
+Moderate <60%
+Adequate
+Pivot
+Comparing
+Underline blue = drier than pivot
+Underline orange = wetter than pivot
+✓ final rank · dark soil = wet
+🌳 Divide & Conquer tree (each row = the array split into smaller groups)
+Waiting [0..7]
+42.5
+18
+55
+27.5
+35
+62
+22
+48
+DIVIDE pick a pivot, split into a drier group and a wetter group
+CONQUER sort each smaller group the same way
+COMBINE left + pivot + right (already in place, so it costs nothing)
+Ready
+Initial sensor readings.
+Each plot reports its soil moisture. Quick Sort will reorder them so the driest field comes first.
+low
+–
+high
+–
+i
+–
+j
+–
+pivot
+–
+comparisons
+0
+swaps
+0
+Pseudo-code (live)
+QUICKSORT(A, low, high)
+  if low < high
+    p = PARTITION(A, low, high)
+    QUICKSORT(A, low, p-1)
+    QUICKSORT(A, p+1, high)
+PARTITION(A, low, high)
+  pivot = A[high];  i = low-1
+  for j = low to high-1
+    if A[j] < pivot
+      i++;  swap(A[i], A[j])
+  swap(A[i+1], A[high])
+  return i+1
+Recursion stack (top = running now)
+empty
+Step 0 / 38
+3. Water allocation
+After sorting, a greedy pass gives each field the water it needs (driest first) until the tank is empty. Need = (60 − moisture) × area × 1000 L.
+
+Water available
+150,000
+L
+🚿 Start irrigation
+Finish the sort in the simulation above to see the priority order.
+4. Complexity analysis
+Measured by actually running the same Quick Sort (last element as pivot) on random data, compared with theory (log-log scale).
+
+10¹
+10²
+10³
+10⁴
+10⁵
+10⁶
+8
+16
+32
+64
+128
+256
+512
+1024
+━ measured (random data)
+╍ n·log₂n
+╍ n(n−1)/2 (worst)
+number of fields n
+Case	Time	When
+Best	O(n log n)	Pivot splits evenly
+Average	O(n log n)	Random moisture values
+Worst	O(n²)	Already sorted data with last-element pivot
+Space	O(log n)	Recursion stack (in-place)
+Your current farm (n = 8): 15 comparisons made · n·log₂n ≈ 24 · n(n−1)/2 = 28. Try “Worst case” above and watch comparisons jump to the n(n−1)/2 value.
+
+5. Viva Q&A
+Why is Quick Sort a divide-and-conquer algorithm?
+What is the worst case and how do we avoid it?
+Is Quick Sort stable? Does it matter here?
+Why a greedy allocation after sorting?
+Which course outcome does this map to?
+6. Conclusion & future scope
+✅ Result
+Quick Sort ranks fields by dryness in O(n log n) average time, and the ranking drives fair, urgent-first water use.
+🌍 Real-world use
+Drip and sprinkler scheduling, canal water distribution, greenhouse zones, any “most urgent first” resource problem.
+🚀 Future scope
+Live IoT sensors (ESP32), weather forecasts, crop-specific priority weights, and a priority queue (heap) for continuously arriving readings.
+DAA FA2 Model · Quick Sort Irrigation · built for group demonstration
+Pressing key...Stopping...
+
+Stop Agent
