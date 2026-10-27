@@ -1,190 +1,227 @@
-🌱 Smart Agriculture Water Allocation
-Sorting farm fields by soil moisture with Quick Sort so the driest fields are irrigated first.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Smart Agriculture Water Allocation – Quick Sort</title>
+<style>
+:root{--bg:#f2f6ee;--card:#fff;--tx:#1b2a1f;--mu:#62736a;--bd:#d8e1d4;--ac:#2f7d4f;--ac2:#1f5f3b;--pv:#7a3fd0;--cj:#1f6fd1;--grass:#8fc46a;--grass2:#7db85a;--fence:#8a5a2b;--code:#f0f4ec;--hl:#fff1b8;--c1:#d64545;--c2:#e8892b;--c3:#d9b92e;--c4:#3f9f5a;--zl:#2f86e0;--zr:#e8892b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101811;--card:#1a251c;--tx:#e6efe7;--mu:#9bab9e;--bd:#2c3b2f;--ac:#59c283;--ac2:#2f7d4f;--pv:#b48cf2;--cj:#6aa8f5;--grass:#3f6b2e;--grass2:#386027;--code:#142016;--hl:#4a4318;--zl:#6aa8f5}}
+:root[data-theme="dark"]{--bg:#101811;--card:#1a251c;--tx:#e6efe7;--mu:#9bab9e;--bd:#2c3b2f;--ac:#59c283;--ac2:#2f7d4f;--pv:#b48cf2;--cj:#6aa8f5;--grass:#3f6b2e;--grass2:#386027;--code:#142016;--hl:#4a4318;--zl:#6aa8f5}
+html{scroll-padding-top:56px;scroll-behavior:smooth}*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5}
+.hero{background:linear-gradient(135deg,#1f5f3b,#3f9f5a 60%,#8fc46a);color:#fff;padding:26px 16px 20px}
+.hero>div,main,nav div{max-width:1080px;margin:0 auto}
+.hero h1{margin:0 0 4px;font-size:1.6rem}.hero p{margin:0 0 12px;opacity:.92}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}.chips span{background:rgba(255,255,255,.18);padding:2px 10px;border-radius:12px;font-size:.78rem}
+.team{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.team div{background:rgba(255,255,255,.15);border-radius:8px;padding:6px 10px;font-size:.8rem}.team b{display:block;outline:none;font-size:.9rem}
+nav{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--bd);padding:8px 16px}
+nav div{display:flex;gap:6px;overflow-x:auto}nav a{white-space:nowrap;color:var(--tx);text-decoration:none;font-size:.84rem;padding:4px 12px;border-radius:14px;border:1px solid var(--bd)}nav a:hover{background:var(--ac);color:#fff}
+main{padding:16px}section{margin-bottom:22px}
+h2{font-size:1.15rem;margin:0 0 4px}h2 em{font-style:normal;color:var(--ac)}.lead{color:var(--mu);margin:0 0 12px;font-size:.92rem}h3{font-size:.92rem;margin:0 0 6px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px}
+.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px;font-size:.82rem}.flow span{background:var(--code);border:1px solid var(--bd);padding:4px 10px;border-radius:8px}.flow i{font-style:normal;color:var(--mu)}
+.sim{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr);gap:12px}@media(max-width:900px){.sim{grid-template-columns:1fr}}
+.ctl{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px}
+button{background:var(--ac);color:#fff;border:0;border-radius:8px;padding:7px 12px;font-size:.84rem;cursor:pointer}button.alt{background:transparent;color:var(--tx);border:1px solid var(--bd)}button:disabled{opacity:.4;cursor:default}
+label{font-size:.82rem;color:var(--mu);display:flex;gap:6px;align-items:center}
+.farm{background:repeating-linear-gradient(90deg,var(--grass),var(--grass) 28px,var(--grass2) 28px,var(--grass2) 56px);border:6px solid var(--fence);border-radius:12px;padding:10px}.inner{position:relative}
+.plot{position:absolute;border-radius:10px;border:2px solid rgba(0,0,0,.25);overflow:hidden;transition:left .55s ease,top .55s ease,opacity .3s,box-shadow .2s,background .8s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;color:#2a1b0c;text-align:center}
+.plot.dk{color:#fff}.plot::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.09) 0 3px,transparent 3px 14px)}
+.plot>*{position:relative}.crop{font-size:1.8rem;line-height:1}.nm{font-size:.72rem;font-weight:700}.pc{font-size:.78rem;font-weight:600}
+.mv{width:70%;height:7px;background:rgba(0,0,0,.3);border-radius:4px;overflow:hidden}.mv i{display:block;height:100%;transition:width .8s,background .8s}
+.rk{position:absolute!important;top:4px;left:4px;background:rgba(0,0,0,.6);color:#fff;font-size:.66rem;border-radius:6px;padding:0 6px}
+.ck{position:absolute!important;top:3px;right:5px;font-size:.85rem;display:none}.plot.fix .ck{display:block}
+.sp{position:absolute!important;inset:0;display:none;align-items:center;justify-content:center;font-size:2.3rem;background:rgba(80,160,255,.25)}.plot.spray .sp{display:flex;animation:pu .6s infinite alternate}@keyframes pu{from{transform:scale(.9)}to{transform:scale(1.15)}}
+.plot.dim{opacity:.3}.plot.pivot{box-shadow:0 0 0 4px var(--pv),0 0 14px var(--pv)}.plot.cur{box-shadow:0 0 0 4px var(--cj),0 0 14px var(--cj)}
+.plot.zl{border-bottom:7px solid var(--zl)}.plot.zr{border-bottom:7px solid var(--zr)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:.74rem;color:var(--mu);margin-top:8px}.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.tree{position:relative;margin-top:12px}.tn{position:absolute;border:2px dashed var(--bd);border-radius:8px;padding:2px 3px;background:var(--card);transition:border-color .3s}
+.tn small{display:block;font-size:.6rem;color:var(--mu);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tn.active{border-color:var(--pv);box-shadow:0 0 8px var(--pv)}.tn.split{border:2px solid var(--zl)}.tn.done{border:2px solid var(--c4)}
+.tc{display:flex;gap:2px}.tc span{flex:1;min-width:0;text-align:center;font-size:.66rem;color:#fff;border-radius:4px;padding:4px 0}.tc .pp{outline:2px solid var(--pv);outline-offset:1px;font-weight:700}
+.phase{display:inline-block;font-size:.7rem;font-weight:700;color:#fff;padding:2px 9px;border-radius:10px;margin-bottom:6px}
+.msg{font-size:.95rem;font-weight:600;margin-bottom:4px}.why{font-size:.86rem;color:var(--mu);min-height:3em}
+.vars{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0}.vars div{background:var(--code);border-radius:8px;padding:4px 6px;text-align:center;font-size:.7rem;color:var(--mu)}.vars b{display:block;color:var(--tx);font-size:.92rem}
+.code{background:var(--code);border-radius:8px;padding:8px 0;font:.76rem/1.55 ui-monospace,Menlo,Consolas,monospace;margin:0}.code div{padding:0 10px;white-space:pre}.code .on{background:var(--hl);font-weight:700}
+.stack{display:flex;flex-direction:column-reverse;gap:3px;font-size:.78rem;margin-top:6px}.stack div{background:var(--code);border-left:4px solid var(--bd);padding:2px 8px;border-radius:4px}.stack div:last-child{border-color:var(--pv);font-weight:700}
+.row{display:grid;grid-template-columns:26px 120px 1fr 190px;gap:8px;align-items:center;padding:4px 0;font-size:.82rem;min-width:600px}.track{height:15px;background:var(--bd);border-radius:8px;overflow:hidden}.fill{height:100%;background:#3b8fe0;transition:width .5s}
+.pill{font-size:.68rem;padding:1px 7px;border-radius:9px;color:#fff;margin-left:4px}.wrap{overflow-x:auto}.hint{color:var(--mu);font-size:.85rem}
+.cx{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,1fr);gap:12px}@media(max-width:900px){.cx{grid-template-columns:1fr}}
+table{border-collapse:collapse;width:100%;font-size:.82rem}td,th{border-bottom:1px solid var(--bd);padding:5px 6px;text-align:left}th{color:var(--mu);font-weight:600}
+svg text{fill:var(--mu);font-size:10px}.qa details{border-bottom:1px solid var(--bd);padding:6px 0}.qa summary{cursor:pointer;font-weight:600;font-size:.9rem}.qa p{margin:6px 0 2px;color:var(--mu);font-size:.86rem}
+footer{text-align:center;color:var(--mu);font-size:.8rem;padding:10px 16px 24px}
+</style>
+</head>
+<body>
+<header class="hero"><div>
+ <h1>🌱 Smart Agriculture Water Allocation</h1>
+ <p>Sorting farm fields by soil moisture with Quick Sort so the driest fields are irrigated first.</p>
+ <div class="chips"><span>Design &amp; Analysis of Algorithms · BIT25PC07</span><span>FA2 – Model Making</span><span>TY IT · Sem V · 2026-27</span><span>Divide &amp; Conquer</span></div>
+ <div class="team"><div>Member 1<b contenteditable="true">Name (click to edit)</b></div><div>Member 2<b contenteditable="true">Name (click to edit)</b></div><div>Member 3<b contenteditable="true">Name (click to edit)</b></div><div>Member 4<b contenteditable="true">Name (click to edit)</b></div></div>
+</div></header>
+<nav><div><a href="#problem">1 Problem</a><a href="#sim">2 Simulation</a><a href="#alloc">3 Water allocation</a><a href="#cx">4 Complexity</a><a href="#viva">5 Viva Q&amp;A</a><a href="#end">6 Conclusion</a></div></nav>
+<main>
+<section id="problem"><h2><em>1.</em> Problem &amp; approach</h2><p class="lead">Why sorting matters in smart irrigation.</p>
+ <div class="g3">
+  <div class="card"><h3>📍 Problem</h3>Sensors report soil-moisture (%) for every field. Water is limited, so the farmer must know <b>which fields are driest</b> without scanning the whole list each time.</div>
+  <div class="card"><h3>⚡ Why Quick Sort</h3>It sorts in place with O(n log n) average time. It splits the fields around a <b>pivot</b>: drier ones go left, wetter ones right, then each side is solved the same way (divide &amp; conquer).</div>
+  <div class="card"><h3>🔁 Pipeline</h3>Each step of this model is one stage of the real system:<div class="flow"><span>Sensors</span><i>→</i><span>Quick Sort</span><i>→</i><span>Priority list</span><i>→</i><span>Greedy water allocation</span><i>→</i><span>Sprinklers</span></div></div>
+ </div></section>
 
-Design & Analysis of Algorithms · BIT25PC07
-FA2 – Model Making
-TY IT · Sem V · 2026-27
-Divide & Conquer
-Member 1
-Name (click to edit)
-Member 2
-Name (click to edit)
-Member 3
-Name (click to edit)
-Member 4
-Name (click to edit)
-1 Problem
-2 Simulation
-3 Water allocation
-4 Complexity
-5 Viva Q&A
-6 Conclusion
-1. Problem & approach
-Why sorting matters in smart irrigation.
+<section id="sim"><h2><em>2.</em> Live simulation</h2><p class="lead">Press Play or Step. The right panel explains every move and highlights the matching pseudo-code line.</p>
+ <div class="sim">
+  <div class="card">
+   <div class="ctl"><button id="back" class="alt">◀ Back</button><button id="step">Step ▶</button><button id="play">Play</button><button id="reset" class="alt">Reset</button>
+    <label>Speed <input id="spd" type="range" min="1" max="5" value="3"></label></div>
+   <div class="ctl"><button id="rand" class="alt">🎲 Random farm</button><button id="samp" class="alt">Sample farm</button><button id="worst" class="alt">⚠ Worst case (already sorted)</button></div>
+   <div class="farm"><div class="inner" id="inner"></div></div>
+   <div class="legend"><span><i style="background:var(--c1)"></i>Critical &lt;30%</span><span><i style="background:var(--c2)"></i>Low &lt;45%</span><span><i style="background:var(--c3)"></i>Moderate &lt;60%</span><span><i style="background:var(--c4)"></i>Adequate</span>
+    <span><i style="background:var(--pv)"></i>Pivot</span><span><i style="background:var(--cj)"></i>Comparing</span><span><i style="background:var(--zl)"></i>Underline blue = drier than pivot</span><span><i style="background:var(--zr)"></i>Underline orange = wetter than pivot</span><span>✓ final rank · dark soil = wet</span></div>
+   <h3 style="margin:14px 0 0">🌳 Divide &amp; Conquer tree <span class="hint">(each row = the array split into smaller groups)</span></h3>
+   <div class="tree" id="tree"></div>
+   <div class="legend" style="margin-top:8px"><span><b style="color:var(--pv)">DIVIDE</b> pick a pivot, split into a drier group and a wetter group</span><span><b style="color:var(--zl)">CONQUER</b> sort each smaller group the same way</span><span><b style="color:#0f8b8d">COMBINE</b> left + pivot + right (already in place, so it costs nothing)</span></div>
+  </div>
+  <div class="card">
+   <span class="phase" id="ph"></span><div class="msg" id="msg"></div><div class="why" id="why"></div>
+   <div class="vars"><div>low<b id="vlo">–</b></div><div>high<b id="vhi">–</b></div><div>i<b id="vi">–</b></div><div>j<b id="vj">–</b></div>
+    <div style="grid-column:span 2">pivot<b id="vp">–</b></div><div>comparisons<b id="cmp">0</b></div><div>swaps<b id="swp">0</b></div></div>
+   <h3>Pseudo-code (live)</h3><pre class="code" id="code"></pre>
+   <h3 style="margin-top:10px">Recursion stack <span class="hint">(top = running now)</span></h3><div class="stack" id="stack"></div>
+   <div class="hint" style="margin-top:8px">Step <b id="sN">0</b> / <b id="sT">0</b></div>
+  </div>
+ </div></section>
 
-📍 Problem
-Sensors report soil-moisture (%) for every field. Water is limited, so the farmer must know which fields are driest without scanning the whole list each time.
-⚡ Why Quick Sort
-It sorts in place with O(n log n) average time. It splits the fields around a pivot: drier ones go left, wetter ones right, then each side is solved the same way (divide & conquer).
-🔁 Pipeline
-Each step of this model is one stage of the real system:
-Sensors
-→
-Quick Sort
-→
-Priority list
-→
-Greedy water allocation
-→
-Sprinklers
-2. Live simulation
-Press Play or Step. The right panel explains every move and highlights the matching pseudo-code line.
+<section id="alloc"><h2><em>3.</em> Water allocation</h2><p class="lead">After sorting, a greedy pass gives each field the water it needs (driest first) until the tank is empty. Need = (60 − moisture) × area × 1000 L.</p>
+ <div class="card"><div class="ctl"><label>Water available <input id="water" type="range" min="0" max="300000" step="5000" value="150000"> <b id="wv"></b> L</label><button id="irr">🚿 Start irrigation</button></div><div id="allocBox" class="wrap"></div></div></section>
 
-◀ Back
-Step ▶
-Play
-Reset
-Speed
-🎲 Random farm
-Sample farm
-⚠ Worst case (already sorted)
-#1
-🌾
-Wheat-A
-42.5%
-#2
-🎋
-Sugarcane-B
-18%
-#3
-🌽
-Maize-C
-55%
-#4
-🧅
-Onion-D
-27.5%
-#5
-🌿
-Cotton-E
-35%
-#6
-🍇
-Grapes-F
-62%
-#7
-🍅
-Tomato-G
-22%
-#8
-🌱
-Rice-H
-48%
-Critical <30%
-Low <45%
-Moderate <60%
-Adequate
-Pivot
-Comparing
-Underline blue = drier than pivot
-Underline orange = wetter than pivot
-✓ final rank · dark soil = wet
-🌳 Divide & Conquer tree (each row = the array split into smaller groups)
-Waiting [0..7]
-42.5
-18
-55
-27.5
-35
-62
-22
-48
-DIVIDE pick a pivot, split into a drier group and a wetter group
-CONQUER sort each smaller group the same way
-COMBINE left + pivot + right (already in place, so it costs nothing)
-Ready
-Initial sensor readings.
-Each plot reports its soil moisture. Quick Sort will reorder them so the driest field comes first.
-low
-–
-high
-–
-i
-–
-j
-–
-pivot
-–
-comparisons
-0
-swaps
-0
-Pseudo-code (live)
-QUICKSORT(A, low, high)
-  if low < high
-    p = PARTITION(A, low, high)
-    QUICKSORT(A, low, p-1)
-    QUICKSORT(A, p+1, high)
-PARTITION(A, low, high)
-  pivot = A[high];  i = low-1
-  for j = low to high-1
-    if A[j] < pivot
-      i++;  swap(A[i], A[j])
-  swap(A[i+1], A[high])
-  return i+1
-Recursion stack (top = running now)
-empty
-Step 0 / 38
-3. Water allocation
-After sorting, a greedy pass gives each field the water it needs (driest first) until the tank is empty. Need = (60 − moisture) × area × 1000 L.
+<section id="cx"><h2><em>4.</em> Complexity analysis</h2><p class="lead">Measured by actually running the same Quick Sort (last element as pivot) on random data, compared with theory (log-log scale).</p>
+ <div class="cx">
+  <div class="card"><svg id="chart" viewBox="0 0 520 260" width="100%"></svg></div>
+  <div class="card"><table><tr><th>Case</th><th>Time</th><th>When</th></tr>
+   <tr><td>Best</td><td>O(n log n)</td><td>Pivot splits evenly</td></tr><tr><td>Average</td><td>O(n log n)</td><td>Random moisture values</td></tr><tr><td>Worst</td><td>O(n²)</td><td>Already sorted data with last-element pivot</td></tr><tr><td>Space</td><td>O(log n)</td><td>Recursion stack (in-place)</td></tr></table>
+   <p class="hint" style="margin-top:10px">Your current farm (n = <b id="cn">8</b>): <b id="cc">0</b> comparisons made · n·log₂n ≈ <b id="cl">0</b> · n(n−1)/2 = <b id="cw">0</b>. Try “Worst case” above and watch comparisons jump to the n(n−1)/2 value.</p></div>
+ </div></section>
 
-Water available
-150,000
-L
-🚿 Start irrigation
-Finish the sort in the simulation above to see the priority order.
-4. Complexity analysis
-Measured by actually running the same Quick Sort (last element as pivot) on random data, compared with theory (log-log scale).
+<section id="viva"><h2><em>5.</em> Viva Q&amp;A</h2><div class="card qa">
+ <details><summary>Why is Quick Sort a divide-and-conquer algorithm?</summary><p>Divide: partition around a pivot. Conquer: recursively sort both sides. Combine: nothing to do, because sorting is in place.</p></details>
+ <details><summary>What is the worst case and how do we avoid it?</summary><p>Already-sorted input with the last element as pivot gives n(n−1)/2 comparisons. A random or median-of-three pivot makes it very unlikely (our C++ program uses a random pivot).</p></details>
+ <details><summary>Is Quick Sort stable? Does it matter here?</summary><p>No. Equal-moisture fields may swap order, so the code breaks ties by field ID to keep results deterministic.</p></details>
+ <details><summary>Why a greedy allocation after sorting?</summary><p>Giving water to the most urgent field first is the best local choice when the goal is to cover the driest fields; sorting makes that choice an O(n) scan.</p></details>
+ <details><summary>Which course outcome does this map to?</summary><p>CO6 (classifying problems and analysing complexity) through rubric criteria 1, 5 and 6, plus design strategy from Unit 3–6 (divide &amp; conquer vs greedy/DP).</p></details></div></section>
 
-10¹
-10²
-10³
-10⁴
-10⁵
-10⁶
-8
-16
-32
-64
-128
-256
-512
-1024
-━ measured (random data)
-╍ n·log₂n
-╍ n(n−1)/2 (worst)
-number of fields n
-Case	Time	When
-Best	O(n log n)	Pivot splits evenly
-Average	O(n log n)	Random moisture values
-Worst	O(n²)	Already sorted data with last-element pivot
-Space	O(log n)	Recursion stack (in-place)
-Your current farm (n = 8): 15 comparisons made · n·log₂n ≈ 24 · n(n−1)/2 = 28. Try “Worst case” above and watch comparisons jump to the n(n−1)/2 value.
+<section id="end"><h2><em>6.</em> Conclusion &amp; future scope</h2><div class="g3">
+ <div class="card"><h3>✅ Result</h3>Quick Sort ranks fields by dryness in O(n log n) average time, and the ranking drives fair, urgent-first water use.</div>
+ <div class="card"><h3>🌍 Real-world use</h3>Drip and sprinkler scheduling, canal water distribution, greenhouse zones, any “most urgent first” resource problem.</div>
+ <div class="card"><h3>🚀 Future scope</h3>Live IoT sensors (ESP32), weather forecasts, crop-specific priority weights, and a priority queue (heap) for continuously arriving readings.</div></div></section>
+</main>
+<footer>DAA FA2 Model · Quick Sort Irrigation · built for group demonstration</footer>
+<script>
+const CROPS=["🌾","🎋","🌽","🧅","🌿","🍇","🍅","🌱"],TARGET=60,PER=1000;
+const SAMPLE=[[1,"Wheat-A",42.5,2],[2,"Sugarcane-B",18,3.5],[3,"Maize-C",55,1.5],[4,"Onion-D",27.5,1],[5,"Cotton-E",35,2.5],[6,"Grapes-F",62,2],[7,"Tomato-G",22,.8],[8,"Rice-H",48,3]].map(([id,name,m,a])=>({id,name,m,a,crop:CROPS[id-1]}));
+const PC={init:["Ready","#667568"],pivot:["CHOOSE PIVOT","#7a3fd0"],compare:["COMPARE","#1f6fd1"],swap:["SWAP","#e8892b"],place:["PLACE PIVOT","#2f7d4f"],solo:["BASE CASE","#8a5a2b"],done:["DONE","#2f7d4f"],combine:["COMBINE","#0f8b8d"]};
+const PSEUDO=["QUICKSORT(A, low, high)","  if low < high","    p = PARTITION(A, low, high)","    QUICKSORT(A, low, p-1)","    QUICKSORT(A, p+1, high)","PARTITION(A, low, high)","  pivot = A[high];  i = low-1","  for j = low to high-1","    if A[j] < pivot","      i++;  swap(A[i], A[j])","  swap(A[i+1], A[high])","  return i+1"];
+let fields=SAMPLE.map(f=>({...f})),steps=[],idx=0,timer=null,byId={},tos=[];
+const $=id=>document.getElementById(id);
+const col=m=>m<30?"var(--c1)":m<45?"var(--c2)":m<60?"var(--c3)":"var(--c4)";
+const lab=m=>m<30?"Critical":m<45?"Low":m<60?"Moderate":"Adequate";
+const less=(a,b)=>a.m!==b.m?a.m<b.m:a.id<b.id;
+$("code").innerHTML=PSEUDO.map((t,i)=>`<div id="L${i}">${t.replace(/</g,"&lt;")}</div>`).join("");
 
-5. Viva Q&A
-Why is Quick Sort a divide-and-conquer algorithm?
-What is the worst case and how do we avoid it?
-Is Quick Sort stable? Does it matter here?
-Why a greedy allocation after sorting?
-Which course outcome does this map to?
-6. Conclusion & future scope
-✅ Result
-Quick Sort ranks fields by dryness in O(n log n) average time, and the ranking drives fair, urgent-first water use.
-🌍 Real-world use
-Drip and sprinkler scheduling, canal water distribution, greenhouse zones, any “most urgent first” resource problem.
-🚀 Future scope
-Live IoT sensors (ESP32), weather forecasts, crop-specific priority weights, and a priority queue (heap) for continuously arriving readings.
-DAA FA2 Model · Quick Sort Irrigation · built for group demonstration
+function build(){
+ const a=fields.slice(),fixed=new Set(),stk=[],nodes=[];let cmp=0,swp=0,nid=0;steps=[];byId={};fields.forEach(f=>byId[f.id]=f);
+ const mkN=(lo,hi,d,par)=>{const n={id:nid++,lo,hi,d,par,piv:null,st:"pending",ids:[]};nodes.push(n);return n};
+ const S=(ph,line,msg,why,o={})=>{nodes.forEach(n=>n.ids=a.slice(n.lo,n.hi+1).map(f=>f.id));steps.push({order:a.map(f=>f.id),fixed:[...fixed],cmp,swp,ph,line,msg,why,stack:stk.map(x=>x.slice()),tree:nodes.map(n=>({...n})),low:o.low??-1,high:o.high??-1,p:o.p??-1,j:o.j??-1,i:o.i??-2})};
+ const root=mkN(0,a.length-1,0,-1);
+ S("init",0,"Initial sensor readings.","Each plot reports its soil moisture. Quick Sort will reorder them so the driest field comes first.");
+ (function qs(nd){
+  const lo=nd.lo,hi=nd.hi;stk.push([lo,hi]);nd.st="active";
+  if(lo===hi){fixed.add(a[lo].id);nd.piv=a[lo].id;S("solo",1,`${a[lo].name} is alone in its group.`,"A group of one element is already sorted (base case: low is not less than high), so there is nothing left to divide.",{low:lo,high:hi});nd.st="done";stk.pop();return}
+  const pv=a[hi];nd.piv=pv.id;
+  S("pivot",6,`DIVIDE group [${lo}..${hi}] – pivot = ${pv.name} (${pv.m}%)`,"The last plot in the group becomes the pivot. Every other plot will be compared to it and sent to the drier side or the wetter side.",{low:lo,high:hi,p:hi,i:lo-1});
+  let i=lo-1;
+  for(let j=lo;j<hi;j++){
+   cmp++;const lt=less(a[j],pv);
+   S("compare",8,`${a[j].name} (${a[j].m}%) vs pivot (${pv.m}%) → ${lt?"drier":"wetter"}`,lt?"Drier than the pivot, so it must end up before it. It is swapped into the 'drier zone' (blue underline).":"Wetter than the pivot, so it stays behind (orange underline). No swap needed.",{low:lo,high:hi,p:hi,j,i});
+   if(lt){i++;if(i!==j){[a[i],a[j]]=[a[j],a[i]];swp++;S("swap",9,`Swap positions ${i} and ${j}`,"Moves the drier plot into the drier zone; the wetter plot it replaced goes to position "+j+".",{low:lo,high:hi,p:hi,j:i,i})}}
+  }
+  if(i+1!==hi){[a[i+1],a[hi]]=[a[hi],a[i+1]];swp++}
+  fixed.add(pv.id);nd.st="split";
+  const L=lo<=i?mkN(lo,i,nd.d+1,nd.id):null,R=i+2<=hi?mkN(i+2,hi,nd.d+1,nd.id):null;
+  S("place",10,`Pivot ${pv.name} placed at final rank #${i+2} → group splits in two`,`DIVIDE finished: everything left of the pivot is drier, everything right is wetter. The pivot never moves again. Now CONQUER: sort ${L?"left ["+lo+".."+i+"]":"(no left part)"} and ${R?"right ["+(i+2)+".."+hi+"]":"(no right part)"} separately.`,{low:lo,high:hi,p:i+1,i});
+  if(L)qs(L);if(R)qs(R);
+  nd.st="done";
+  S("combine",4,`COMBINE [${lo}..${hi}]: left + ${pv.name} + right`,"Both halves are now sorted. Because Quick Sort works in place, no merging is needed – the group is already in order. This is why Quick Sort's combine step is free.",{low:lo,high:hi});
+  stk.pop();
+ })(root);
+ S("done",-1,"Sorted – irrigation priority is ready!","Plot #1 is the driest. Scroll to 'Water allocation' and press Start irrigation.");
+ steps[steps.length-1].fixed=a.map(f=>f.id);
+}
+function setSoil(id,m,txt){const d=$("p"+id),t=Math.min(m/70,1);d.style.background=`hsl(${32-8*t},42%,${70-46*t}%)`;d.classList.toggle("dk",t>.45);const mv=d.querySelector(".mv i");mv.style.width=Math.min(m/70*100,100)+"%";mv.style.background=col(m);d.querySelector(".pc").textContent=txt||(m+"%")}
+function resetSoil(){tos.forEach(clearTimeout);tos=[];fields.forEach(f=>{setSoil(f.id,f.m);$("p"+f.id).classList.remove("spray")})}
+function layout(){const inner=$("inner");inner.innerHTML="";fields.forEach(f=>{const d=document.createElement("div");d.className="plot";d.id="p"+f.id;d.innerHTML=`<span class="rk"></span><span class="ck">✓</span><div class="crop">${f.crop}</div><div class="nm">${f.name}</div><div class="mv"><i></i></div><div class="pc"></div><div class="sp">💦</div>`;inner.appendChild(d);setSoil(f.id,f.m)})}
+function render(){
+ const s=steps[idx],n=fields.length,w=$("inner").clientWidth||600,cols=w<520?2:4,rows=Math.ceil(n/cols),gap=10,sw=w/cols,sh=cols===4?140:132;
+ $("inner").style.height=rows*sh+"px";
+ s.order.forEach((id,pos)=>{const d=$("p"+id),dk=d.classList.contains("dk");
+  d.style.left=(pos%cols)*sw+gap/2+"px";d.style.top=Math.floor(pos/cols)*sh+gap/2+"px";d.style.width=sw-gap+"px";d.style.height=sh-gap+"px";d.querySelector(".rk").textContent="#"+(pos+1);
+  const inG=s.low>=0&&pos>=s.low&&pos<=s.high;
+  d.className="plot"+(dk?" dk":"")+(s.low>=0&&!inG?" dim":"")+(pos===s.p?" pivot":"")+(pos===s.j?" cur":"")+(s.fixed.includes(id)?" fix":"")+(s.ph==="compare"||s.ph==="swap"?(inG&&pos<=s.i?" zl":inG&&pos>s.i&&pos<s.j&&pos!==s.p?" zr":""):"");});
+ drawTree(s);
+ const [pl,pc]=PC[s.ph];$("ph").textContent=pl;$("ph").style.background=pc;$("msg").textContent=s.msg;$("why").textContent=s.why;
+ $("vlo").textContent=s.low>=0?s.low:"–";$("vhi").textContent=s.high>=0?s.high:"–";$("vi").textContent=s.i>-2?s.i:"–";$("vj").textContent=s.j>=0?s.j:"–";
+ $("vp").textContent=s.p>=0&&s.ph!=="place"&&s.ph!=="solo"?`${byId[s.order[s.p]].name} (${byId[s.order[s.p]].m}%)`:"–";
+ $("cmp").textContent=s.cmp;$("swp").textContent=s.swp;
+ PSEUDO.forEach((_,i)=>$("L"+i).className=i===s.line||(s.ph==="compare"&&i===7)||(s.ph==="place"&&i===11)?"on":"");
+ $("stack").innerHTML=s.stack.map(x=>`<div>QUICKSORT(A, ${x[0]}, ${x[1]})</div>`).join("")||'<div style="border-color:var(--bd)">empty</div>';
+ $("sN").textContent=idx;$("sT").textContent=steps.length-1;
+ $("back").disabled=idx===0;$("step").disabled=idx===steps.length-1;$("irr").disabled=idx!==steps.length-1;
+ const L=steps[steps.length-1],N=n;$("cn").textContent=N;$("cc").textContent=L.cmp;$("cl").textContent=Math.round(N*Math.log2(N));$("cw").textContent=N*(N-1)/2;
+ allocate();
+}
+function drawTree(s){
+ const box=$("tree"),n=fields.length,w=box.clientWidth||560,cw=w/n,rh=64,T={active:"Dividing…",pending:"Waiting",split:"Conquering children",done:"✓ Sorted"};
+ const maxD=Math.max(...s.tree.map(t=>t.d)),rows=maxD+1+(s.ph==="done"?1:0);box.style.height=rows*rh+"px";
+ const cen=t=>(t.lo+t.hi+1)/2*cw;let svg="",h="";
+ s.tree.forEach(t=>{if(t.par>=0){const p=s.tree[t.par];svg+=`<line x1="${cen(p)}" y1="${p.d*rh+46}" x2="${cen(t)}" y2="${t.d*rh}" stroke="var(--mu)" stroke-width="1.5"/>`}
+  h+=`<div class="tn ${t.st}" style="left:${t.lo*cw+2}px;top:${t.d*rh}px;width:${(t.hi-t.lo+1)*cw-4}px"><small>${T[t.st]} [${t.lo}..${t.hi}]</small><div class="tc">${t.ids.map(id=>`<span style="background:${col(byId[id].m)}" class="${id===t.piv&&t.st!=="pending"?"pp":""}">${byId[id].m}</span>`).join("")}</div></div>`});
+ if(s.ph==="done")h+=`<div class="tn done" style="left:2px;top:${(maxD+1)*rh}px;width:${w-4}px"><small>COMBINE: left + pivot + right = sorted farm (driest → wettest)</small><div class="tc">${s.order.map(id=>`<span style="background:${col(byId[id].m)}">${byId[id].m}</span>`).join("")}</div></div>`;
+ box.innerHTML=`<svg width="${w}" height="${rows*rh}" style="position:absolute;left:0;top:0;pointer-events:none">${svg}</svg>`+h;
+}
+function plan(){let rem=+$("water").value;const o=steps[steps.length-1].order.map(id=>byId[id]);return o.map(f=>{const need=Math.max(0,TARGET-f.m)*f.a*PER,give=Math.min(need,rem);rem-=give;return{f,need,give}}).concat([{rem}])}
+function allocate(){const box=$("allocBox");$("wv").textContent=Number($("water").value).toLocaleString();
+ if(idx!==steps.length-1){box.innerHTML='<div class="hint">Finish the sort in the simulation above to see the priority order.</div>';return}
+ const p=plan(),rem=p.pop().rem,mx=Math.max(...p.map(x=>x.need),1);
+ box.innerHTML=p.map((x,i)=>`<div class="row"><b>${i+1}</b><span>${x.f.crop} ${x.f.name}</span><div class="track" style="width:${Math.max(x.need/mx*100,2)}%"><div class="fill" style="width:${x.need?x.give/x.need*100:100}%"></div></div><span>${Math.round(x.give).toLocaleString()} / ${Math.round(x.need).toLocaleString()} L<span class="pill" style="background:${col(x.f.m)}">${lab(x.f.m)}</span></span></div>`).join("")+`<div class="hint" style="margin-top:6px">Unused water: ${Math.round(rem).toLocaleString()} L</div>`}
+function irrigate(){stop();resetSoil();allocate();let k=0;$("inner").scrollIntoView({block:"center"});
+ plan().slice(0,-1).forEach(x=>{if(x.give<=0)return;tos.push(setTimeout(()=>{const d=$("p"+x.f.id),nm=Math.min(100,Math.round((x.f.m+x.give/(x.f.a*PER))*10)/10);d.classList.add("spray");setSoil(x.f.id,nm,`${x.f.m}% → ${nm}%`);tos.push(setTimeout(()=>d.classList.remove("spray"),1100))},k++*900))})}
+function go(i){idx=Math.max(0,Math.min(steps.length-1,i));resetSoil();render()}
+function stop(){clearInterval(timer);timer=null;$("play").textContent="Play"}
+function play(){if(timer){stop();return}if(idx===steps.length-1)go(0);$("play").textContent="Pause";timer=setInterval(()=>{if(idx>=steps.length-1){stop();return}go(idx+1)},[1400,1000,700,400,200][$("spd").value-1])}
+function init(){stop();build();layout();idx=0;resetSoil();render()}
+function mk(arr){return arr.map((m,i)=>({id:i+1,name:"Field-"+(i+1),m,a:Math.round((.5+Math.random()*3.5)*10)/10,crop:CROPS[i]}))}
+$("step").onclick=()=>{stop();go(idx+1)};$("back").onclick=()=>{stop();go(idx-1)};$("play").onclick=play;$("reset").onclick=()=>{stop();go(0)};$("irr").onclick=irrigate;
+$("spd").oninput=()=>{if(timer){stop();play()}};$("water").oninput=()=>{resetSoil();allocate()};
+$("rand").onclick=()=>{fields=mk(Array.from({length:8},()=>Math.round((10+Math.random()*58)*2)/2));init()};
+$("samp").onclick=()=>{fields=SAMPLE.map(f=>({...f}));init()};
+$("worst").onclick=()=>{fields=mk([12,20,28,36,44,52,60,68]);init()};
+window.addEventListener("resize",render);
+function chart(){
+ const ns=[8,16,32,64,128,256,512,1024],W=520,H=260,P=38,lx=n=>P+(Math.log2(n)-3)/7*(W-P-14),ly=v=>H-28-(Math.log10(v)-0.5)/5.5*(H-44);
+ const cnt=n=>{let c=0;const a=Array.from({length:n},()=>Math.random());(function q(l,h){if(l>=h)return;const p=a[h];let i=l-1;for(let j=l;j<h;j++){c++;if(a[j]<p){i++;[a[i],a[j]]=[a[j],a[i]]}}[a[i+1],a[h]]=[a[h],a[i+1]];q(l,i);q(i+2,h)})(0,n-1);return c};
+ const meas=ns.map(n=>{let t=0;for(let k=0;k<5;k++)t+=cnt(n);return t/5}),line=(f,c,d)=>`<polyline fill="none" stroke="${c}" stroke-width="2" ${d?'stroke-dasharray="5 4"':""} points="${ns.map((n,i)=>lx(n)+","+ly(f(n,i))).join(" ")}"/>`;
+ let g="";for(let e=1;e<=6;e++)g+=`<line x1="${P}" x2="${W-10}" y1="${ly(10**e)}" y2="${ly(10**e)}" stroke="var(--bd)"/><text x="4" y="${ly(10**e)+3}">10${"⁰¹²³⁴⁵⁶"[e]}</text>`;
+ ns.forEach(n=>g+=`<text x="${lx(n)-8}" y="${H-12}">${n}</text>`);
+ $("chart").innerHTML=g+line(n=>n*(n-1)/2,"#d64545",1)+line(n=>n*Math.log2(n),"#2f86e0",1)+line((n,i)=>meas[i],"#2f7d4f")+
+ `<text x="${P+6}" y="14" style="fill:#2f7d4f">━ measured (random data)</text><text x="${P+150}" y="14" style="fill:#2f86e0">╍ n·log₂n</text><text x="${P+215}" y="14" style="fill:#d64545">╍ n(n−1)/2 (worst)</text><text x="${W/2-20}" y="${H-1}">number of fields n</text>`;
+}
+init();chart();
+</script>
+</body>
+</html>
 Pressing key...Stopping...
 
 Stop Agent
